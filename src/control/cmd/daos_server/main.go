@@ -54,20 +54,6 @@ func (cmd *versionCmd) Execute(_ []string) error {
 	return nil
 }
 
-type cmdLogger interface {
-	setLog(*logging.LeveledLogger)
-}
-
-type logCmd struct {
-	log *logging.LeveledLogger
-}
-
-func (c *logCmd) setLog(log *logging.LeveledLogger) {
-	c.log = log
-	// Initialize the netdetect logger
-	netdetect.SetLogger(log)
-}
-
 func exitWithError(log *logging.LeveledLogger, err error) {
 	log.Debugf("%+v", err)
 	log.Errorf("%v", err)
@@ -101,8 +87,8 @@ func parseOpts(args []string, opts *mainOpts, log *logging.LeveledLogger) error 
 			log.WithErrorLogger((&logging.DefaultErrorLogger{}).WithSyslogOutput())
 		}
 
-		if logCmd, ok := cmd.(cmdLogger); ok {
-			logCmd.setLog(log)
+		if logCmd, ok := cmd.(cmdutil.LogSetter); ok {
+			logCmd.SetLog(log)
 		}
 
 		if cfgCmd, ok := cmd.(cfgLoader); ok {
@@ -151,6 +137,9 @@ func main() {
 	if err := pbin.CheckHelper(log, pbin.DaosAdminName); err != nil {
 		exitWithError(log, err)
 	}
+
+	// Set the package-level logger for netdetect.
+	netdetect.SetLogger(log)
 
 	if err := parseOpts(os.Args[1:], &opts, log); err != nil {
 		if errors.Cause(err) == context.Canceled {

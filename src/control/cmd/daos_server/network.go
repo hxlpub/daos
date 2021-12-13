@@ -13,6 +13,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/daos-stack/daos/src/control/cmd/dmg/pretty"
+	"github.com/daos-stack/daos/src/control/common/cmdutil"
 	"github.com/daos-stack/daos/src/control/lib/control"
 	"github.com/daos-stack/daos/src/control/lib/netdetect"
 )
@@ -29,7 +30,7 @@ type networkCmd struct {
 // that match the given fabric provider.
 type networkScanCmd struct {
 	cfgCmd
-	logCmd
+	cmdutil.LogCmd
 	FabricProvider string `short:"p" long:"provider" description:"Filter device list to those that support the given OFI provider or 'all' for all available (default is the provider specified in daos_server.yml)"`
 }
 
@@ -75,7 +76,7 @@ func (cmd *networkScanCmd) Execute(args []string) error {
 	if err := pretty.PrintHostFabricMap(hfm, &bld); err != nil {
 		return err
 	}
-	cmd.log.Info(bld.String())
+	cmd.Info(bld.String())
 
 	return nil
 }

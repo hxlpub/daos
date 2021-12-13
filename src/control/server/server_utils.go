@@ -127,7 +127,7 @@ func updateFabricEnvars(ctx context.Context, log logging.Logger, cfg *engine.Con
 // netInit performs all network detection tasks in one place starting with
 // netdetect library init and cleaning up on exit. Warn if configured number
 // of engines is less than NUMA node count and update-in-place engine configs.
-func netInit(ctx context.Context, log *logging.LeveledLogger, cfg *config.Server) (uint32, error) {
+func netInit(ctx context.Context, log logging.Logger, cfg *config.Server) (uint32, error) {
 	engineCount := len(cfg.Engines)
 	if engineCount == 0 {
 		log.Debug("no engines configured, skipping network init")

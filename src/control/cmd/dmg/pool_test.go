@@ -852,7 +852,7 @@ func TestDmg_PoolListCmd_Errors(t *testing.T) {
 
 			PoolListCmd := new(PoolListCmd)
 			PoolListCmd.setInvoker(mi)
-			PoolListCmd.setLog(log)
+			PoolListCmd.SetLog(log)
 			PoolListCmd.setConfig(tc.ctlCfg)
 
 			gotErr := PoolListCmd.Execute(nil)

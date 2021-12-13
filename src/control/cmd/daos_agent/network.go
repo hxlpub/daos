@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/daos-stack/daos/src/control/cmd/dmg/pretty"
+	"github.com/daos-stack/daos/src/control/common/cmdutil"
 	"github.com/daos-stack/daos/src/control/lib/control"
 	"github.com/daos-stack/daos/src/control/lib/netdetect"
 )
@@ -21,7 +22,7 @@ const (
 )
 
 type netScanCmd struct {
-	logCmd
+	cmdutil.LogCmd
 	jsonOutputCmd
 	FabricProvider string `short:"p" long:"provider" description:"Filter device list to those that support the given OFI provider or 'all' for all available (default is all local providers)"`
 }
@@ -30,7 +31,7 @@ func (cmd *netScanCmd) printUnlessJson(fmtStr string, args ...interface{}) {
 	if cmd.jsonOutputEnabled() {
 		return
 	}
-	cmd.log.Infof(fmtStr, args...)
+	cmd.Infof(fmtStr, args...)
 }
 
 func (cmd *netScanCmd) Execute(_ []string) error {
@@ -51,7 +52,7 @@ func (cmd *netScanCmd) Execute(_ []string) error {
 
 	results, err := netdetect.ScanFabric(netCtx, provider, defaultExcludeInterfaces)
 	if err != nil {
-		exitWithError(cmd.log, err)
+		exitWithError(cmd.Logger, err)
 		return nil
 	}
 
@@ -77,7 +78,7 @@ func (cmd *netScanCmd) Execute(_ []string) error {
 	if err := pretty.PrintHostFabricMap(hfm, &bld); err != nil {
 		return err
 	}
-	cmd.log.Info(bld.String())
+	cmd.Info(bld.String())
 
 	return nil
 }
