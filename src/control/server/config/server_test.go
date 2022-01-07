@@ -44,6 +44,12 @@ var defConfigCmpOpts = []cmp.Option{
 	cmpopts.IgnoreFields(Server{}, "Path"),
 	cmpopts.IgnoreFields(engine.Config{}, "GetNetDevCls", "ValidateProvider",
 		"GetIfaceNumaNode"),
+	cmp.Comparer(func(x, y *storage.BdevDeviceList) bool {
+		if x == nil && y == nil {
+			return true
+		}
+		return x.Equals(y)
+	}),
 }
 
 // uncommentServerConfig removes leading comment chars from daos_server.yml
@@ -645,7 +651,7 @@ func TestServerConfig_Parsing(t *testing.T) {
 								WithBdevDeviceList(MockPCIAddr(1), MockPCIAddr(1)),
 						))
 			},
-			expValidateErr: errors.New("bdev_list contains duplicate pci"),
+			expValidateErr: errors.New("valid PCI addresses"),
 		},
 		"bad busid range": {
 			// fail first engine storage
@@ -949,7 +955,7 @@ func TestServerConfig_DuplicateValues(t *testing.T) {
 						WithBdevClass(storage.ClassNvme.String()).
 						WithBdevDeviceList(MockPCIAddr(2), MockPCIAddr(2)),
 				),
-			expErr: errors.New("bdev_list contains duplicate pci addresses"),
+			expErr: errors.New("valid PCI addresses"),
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
